@@ -45,7 +45,7 @@ const step = timestap => {
             obj.start(); 
         } else {
             // 计算时间差
-            obj.timedelta = timestap - last_timestap;
+            obj.timedelta = timestap- last_timestap;
             // 执行 update
             obj.update();
         }

@@ -1,11 +1,11 @@
 <template>
   <div ref="parent" class="gamemap">
-    <canvas ref="canvas"></canvas>
+    <canvas ref="canvas" tabindex="0"></canvas>
   </div>
 </template>
 
 <script>
-  import { GameMap } from '@/assets/scripts/GameMap';
+  import { GameMap } from '@/assets/scripts/game_map/GameMap';
   // onMounted 组件挂载结束后的操作
   import { ref, onMounted } from 'vue';
 

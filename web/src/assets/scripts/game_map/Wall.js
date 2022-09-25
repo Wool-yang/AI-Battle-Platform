@@ -1,4 +1,4 @@
-import { GameObject } from "./GameObject";
+import { GameObject } from "../GameObject";
 
 export class Wall extends GameObject {
     constructor(r, c, gamemap) {
@@ -14,6 +14,7 @@ export class Wall extends GameObject {
         this.render();
     }
 
+    // 绘制一块障碍墙
     render() {
         const L = this.gamemap.L;
         const ctx = this.gamemap.ctx;
