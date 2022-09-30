@@ -12,7 +12,7 @@
 }
 </script>
 
-<style>
+<style scoped>
   .playgroud {
     width: 50vw;
     height: 75vh;

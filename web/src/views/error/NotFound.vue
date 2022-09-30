@@ -2,11 +2,7 @@
   <ContentField>404 Not Found</ContentField>
 </template>
 
-<style>
-
-</style>
-
-<script scoped>
+<script>
   import ContentField from '@/components/ContentField.vue';
   export default {
       name: "NotFound",
@@ -15,3 +11,7 @@
       }
   };
 </script>
+
+<style scoped>
+
+</style>

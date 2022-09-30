@@ -2,11 +2,7 @@
   <PlayGround></PlayGround>
 </template>
 
-<style>
-
-</style>
-
-<script scoped>
+<script>
   import PlayGround from '@/components/PlayGround.vue';
   export default {
     name: "PkIndex",
@@ -15,4 +11,7 @@
     }
   };
 </script>
-    
+
+<style scoped>
+
+</style>
