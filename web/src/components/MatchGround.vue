@@ -20,7 +20,7 @@
       </div>
       <div class="row">
         <div class="col-12" style="text-align:center;">
-          <button type="button" @click="click_match_btn" :class="'btn btn-' + match_btn_type" style="margin-top:15vh;">{{ match_btn_info }}</button>
+          <button type="button" @click="click_match_btn" :class="'btn btn-' + match_btn_type + ' btn-lg'" style="margin-top:17vh;">{{ match_btn_info }}</button>
         </div>
       </div>
   </div>
@@ -74,6 +74,7 @@
     height: 75vh;
     margin: 7vh auto;
     background-color: rgba(50, 50, 50, 0.5);
+    border-radius: 5vh;
   }
   div.user-photo {
     text-align: center;
