@@ -1,0 +1,10 @@
+server:
+  port: 3000
+
+spring:
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: root
+      password: 123456
+      url: jdbc:mysql://localhost:3307/abp?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8

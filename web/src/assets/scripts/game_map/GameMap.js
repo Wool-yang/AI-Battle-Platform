@@ -24,64 +24,8 @@ export class GameMap extends GameObject {
         ]
     }
 
-    /* // 判断两个点之间是否连通 DFS
-    check_connetivity(g, sx, sy, tx, ty) {
-        if(sx == tx && sy == ty) return true;
-        g[sx][sy] = true;
-
-        let dx = [-1, 0, 1, 0], dy = [0, 1, 0, -1];
-
-        for(let i = 0; i < 4; i ++ ) {
-            let x = sx + dx[i], y = sy + dy[i];
-            if (!g[x][y] && this.check_connetivity(g, x, y, tx, ty))
-                return true;
-        }
-        return false;
-    }*/
-
-    create_walls() {
-        /* // 初始化布尔数组
-        const g = [];
-        for (let r = 0; r < this.rows; r ++ ) {
-            g[r] = [];
-            for (let c = 0; c < this.cols; c ++ ) {
-                g[r][c]= false;
-            }
-        }
-
-        // 给地图四周加墙
-        for(let r = 0; r < this.rows; r ++ ) {
-            g[r][0] = g[r][this.cols - 1] = true;
-        }
-
-        for(let c = 0; c < this.rows; c ++ ) {
-            g[0][c] = g[this.rows - 1][c] = true;
-        }
-        
-        // 创建随机障碍物
-        for (let i = 0; i < this.inner_walls_count / 2; i ++ ) {
-            // 随机 1000次 保证单次障碍一定能生成
-            for (let j = 0; j < 1000; j ++ ) {
-                let r = parseInt(Math.random() * this.rows);
-                let c = parseInt(Math.random() * this.cols);
-
-                // 如果随机点已经是障碍物或者随机到玩家生成点则重新随机
-                if (g[r][c] || g[this.rows - 1 - r][this.cols - 1 - c]) continue;
-                if (r == this.rows - 2 && c == 1 || r == 1 && c == this.cols - 2) continue;
-
-                // 中心对称生成，保证公平性
-                g[r][c] = g[this.rows - 1 - r][this.cols - 1 - c] = true;
-                break;
-            }
-        }
-
-        // 玩家之间连通，且另外一个对角也连通，减少地图闭环
-        const copy_g1 = JSON.parse(JSON.stringify(g));
-        const copy_g2 = JSON.parse(JSON.stringify(g));
-        if(!this.check_connetivity(copy_g1, this.rows - 2, 1, 1, this.cols - 2)) return false;
-        if(!this.check_connetivity(copy_g2, 1, 1, this.rows - 2, this.cols - 2)) return false;*/
-        
-        const g = this.store.state.pk.gamemap;
+    create_walls() {        
+        const g = this.store.state.pk.game_map;
 
         // 根据布尔数组生成墙
         for (let r = 0; r < this.rows; r ++ ) {
@@ -95,11 +39,6 @@ export class GameMap extends GameObject {
     }
 
     start() {
-        /* // 随机 1000 次，确保能生成地图
-        for (let i = 0; i < 1000; i ++ ) {
-            if (this.create_walls())
-                break;
-        } */
         this.create_walls();
         this.add_listening_events();
     }
@@ -151,7 +90,7 @@ export class GameMap extends GameObject {
             if (snake.status !== 'idle') return false;
             if (snake.direction === -1) return false;
         }
-
+        
         return true;
     }
 
@@ -167,43 +106,20 @@ export class GameMap extends GameObject {
         // 需要先将 canvas 聚焦
         this.ctx.canvas.focus();
 
-        const [snake0, snake1] = this.snakes;
         this.ctx.canvas.addEventListener("keydown", e => {
-            if (e.key === 'w') snake0.set_direction(0);
-            else if (e.key === 'd') snake0.set_direction(1);
-            else if (e.key === 's') snake0.set_direction(2);
-            else if (e.key === 'a') snake0.set_direction(3);    
-                    
-            if (e.key === 'ArrowUp') snake1.set_direction(0);
-            else if (e.key === 'ArrowRight') snake1.set_direction(1)
-            else if (e.key === 'ArrowDown') snake1.set_direction(2);
-            else if (e.key === 'ArrowLeft') snake1.set_direction(3);
+            let d = -1;
+
+            if (e.key === 'w') d = 0;
+            else if (e.key === 'd') d = 1;
+            else if (e.key === 's') d = 2;
+            else if (e.key === 'a') d = 3;
+
+            if (d >= 0) {
+                this.store.state.pk.socket.send(JSON.stringify({
+                    event: "move",
+                    direction: d
+                }));
+            }
         });
-    }
-
-    // 对 next_cell 的合法性校验
-    check_valid(cell) {
-        // 检测是否撞墙
-        for (const wall of this.walls) {
-            if (wall.r === cell.r && wall.c === cell.c) 
-                return false;
-        }
-
-        // 检测是否撞击蛇身
-        for (const snake of this.snakes) {
-            let k = snake.cells.length;
-
-            if (!snake.check_length_increasing()) {
-                k -- ;
-            }
-
-            for (let i = 0; i < k; i ++ ) {
-                if (snake.cells[i].r === cell.r && snake.cells[i].c === cell.c) {  
-                    return false;
-                }
-            }
-        }
-
-        return true;
     }
 }

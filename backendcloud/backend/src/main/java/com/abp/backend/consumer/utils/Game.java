@@ -41,6 +41,7 @@ public class Game extends Thread{
 
         this.playerA = new Player(idA, this.rows - 2, 1, new ArrayList<>());
         this.playerB = new Player(idB, 1, this.cols - 2, new ArrayList<>());
+        System.out.println("create game" + " " + idA + " " + idB);
     }
 
     public Player getPlayerA() {
@@ -73,7 +74,7 @@ public class Game extends Thread{
         return g;
     }
 
-    private boolean drawG() {
+    private boolean  drawG() {
         for (int i = 0; i < this.rows; i++) {
             for (int j = 0; j < this.cols; j++) {
                 g[i][j] = 0;
@@ -102,8 +103,9 @@ public class Game extends Thread{
             }
         }
 
-        return check_connectivity(this.rows - 2, 1, 1, this.cols - 2) &&
-               check_connectivity(1, 1, this.rows - 2, this.cols - 2);
+        // 检查两个对角连通性会导致 RestTemplate 通信异常，应该是超时了
+        return check_connectivity(this.rows - 2, 1, 1, this.cols - 2)/* &&
+               check_connectivity(1, 1, this.rows - 2, this.cols - 2)*/;
     }
 
     private boolean check_connectivity(int sx, int sy, int tx, int ty) {
@@ -127,6 +129,7 @@ public class Game extends Thread{
 
     public void createMap() {
         for (int i = 0; i < 1000; i++) {
+            System.out.print(i);
             if (drawG())
                 break;
         }
@@ -265,6 +268,7 @@ public class Game extends Thread{
         if (WebSocketServer.users.get(playerB.getId()) != null)
             WebSocketServer.users.get(playerB.getId()).sendMessage(message);
     }
+
     @Override
     public void run() {
         // 两条蛇每三回合增长一格 地图 15 * 16 1000 回合够用

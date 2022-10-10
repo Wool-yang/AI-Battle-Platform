@@ -129,11 +129,6 @@ export class Snake extends GameObject {
             // 这边不序列化反序列化的话会导致最后全部引用第 0 位元素
             this.cells[i] = JSON.parse(JSON.stringify(this.cells[i - 1]));
         }
-
-        // 下一步操作不合法，蛇死亡
-        if (!this.gamemap.check_valid(this.next_cell)) {
-            this.status = 'die';
-        }
     }
 
     // 对当前蛇的每一个 Cell 进行绘制
