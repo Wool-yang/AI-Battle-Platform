@@ -1,7 +1,7 @@
 <template>
   <div class="matchground">
       <div class="row">
-        <div class="col-6">
+        <div class="col-4">
           <div class="user-photo">
             <img :src="$store.state.user.photo" alt="" />
           </div>
@@ -9,7 +9,15 @@
             {{ $store.state.user.username }}
           </div>
         </div>
-        <div class="col-6">
+        <div class="col-4">
+          <div class="user-select-bot">
+            <select v-model="selected_bot" class="form-select" aria-label="Default select example">
+              <option selected value="-1">Play in person</option>
+              <option v-for="bot in bots" :key="bot.id" :value="bot.id">{{ bot.title }}</option>
+            </select>
+          </div> 
+        </div>
+        <div class="col-4">
           <div class="user-photo">
             <img :src="$store.state.pk.opponent_photo" alt="" />
           </div>
@@ -29,6 +37,7 @@
 <script>
   import store from '@/store';
   import { ref } from 'vue';
+  import $ from 'jquery';
 
   export default {
     name: "MatchGround",
@@ -36,6 +45,8 @@
     setup() {
       let match_btn_info = ref("Start Matching");
       let match_btn_type = ref("success");
+      let bots = ref([]);
+      let selected_bot = ref("-1");
 
       const click_match_btn = () => {
         if (match_btn_info.value === "Start Matching") {
@@ -46,8 +57,8 @@
           // 传递一个 域 来表示当前操作
           store.state.pk.socket.send(JSON.stringify({
             event: "start-matching",
+            bot_id: selected_bot.value
           }));
-
         } else {
           match_btn_info.value = "Start Matching";
           match_btn_type.value = "success";
@@ -56,13 +67,30 @@
             event: "stop-matching",
           }));
         }
-      }
+      };
+
+      const refresh_bots = () => {
+        $.ajax({
+          url: "http://localhost:3000/user/bot/getall/",
+          type: "GET",
+          headers: {
+            Authorization: "Bearer " + store.state.user.token,
+          },
+          success(resp) {
+            bots.value = resp;
+          }
+        })
+      };
+
+      refresh_bots();
 
 
       return {
         match_btn_info,
         match_btn_type,
         click_match_btn,
+        bots,
+        selected_bot
       }
     }
 }
@@ -89,5 +117,12 @@
     font-size: 24px;
     font-weight: 600;
     color: whitesmoke;
+  }
+  div.user-select-bot {
+    padding-top: 25vh;
+  }
+  div.user-select-bot > select {
+    width: 70%;
+    margin: 0 auto;
   }
 </style>

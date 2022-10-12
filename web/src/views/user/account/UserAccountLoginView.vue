@@ -34,13 +34,20 @@
       let password = ref('');
       let error_message = ref('');
 
+      let url = store.state.user.page_before;
+
       const jwt_token = localStorage.getItem("jwt_token");
       if (jwt_token) {
         store.commit("updateToken", jwt_token);
         store.dispatch("getInfo", {
           success() {
             store.commit("updatePulledInfo", true);
-            router.push({name: "home"});
+            if (url !== "") {
+              store.commit("updatePageBefore", "");
+              router.push({name: url}); 
+            } else {
+              router.push({name: 'home'});
+            }
           },
           error() {
             store.commit("updatePulledInfo", true);
@@ -60,7 +67,12 @@
           success() {
             store.dispatch("getInfo", {
               success() {
-                router.push({name: 'home'});
+                if (url !== "") {
+                  store.commit("updatePageBefore", "");
+                  router.push({name: url}); 
+                } else {
+                  router.push({name: 'home'});
+                }
                 // console.log(store.state.user)
               },
               error() {

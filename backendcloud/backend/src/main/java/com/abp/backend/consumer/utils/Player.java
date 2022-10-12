@@ -12,7 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 public class Player {
     private Integer id;
-
+    private Integer botId; // -1 表示玩家亲自游玩
+    private String botCode;
     // 起点坐标
     private Integer sx;
     private Integer sy;

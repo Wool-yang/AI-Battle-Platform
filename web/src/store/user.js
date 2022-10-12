@@ -8,6 +8,7 @@ export default ({
     token: "",
     is_login: "",
     pulled_info: false,
+    page_before: ""
   },
   getters: {
   },
@@ -28,9 +29,13 @@ export default ({
       state.is_login = "";
       state.token = "";
       state.pulled_info = false;
+      state.page_before = "";
     },
     updatePulledInfo(state, pulled_info) {
       state.pulled_info = pulled_info;
+    },
+    updatePageBefore(state, page_before) {
+      state.page_before = page_before;
     }
   },
   actions: {
