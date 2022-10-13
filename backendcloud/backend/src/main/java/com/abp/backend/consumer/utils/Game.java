@@ -3,6 +3,7 @@ package com.abp.backend.consumer.utils;
 import com.abp.backend.consumer.WebSocketServer;
 import com.abp.backend.pojo.Bot;
 import com.abp.backend.pojo.Record;
+import com.abp.backend.pojo.User;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -230,7 +231,26 @@ public class Game extends Thread{
 
         return res.toString();
     }
+
+    private void updateUserRating(Player player, Integer rating) {
+        User user = WebSocketServer.userMapper.selectById(player.getId());
+        user.setRating(rating);
+        WebSocketServer.userMapper.updateById(user);
+    }
+
     private void saveToDatabase() {
+        Integer ratingA = WebSocketServer.userMapper.selectById(playerA.getId()).getRating();
+        Integer ratingB = WebSocketServer.userMapper.selectById(playerB.getId()).getRating();
+        if ("A".equals(winner)) {
+            ratingA += 5;
+            ratingB -= 5;
+        } else if ("B".equals(winner)) {
+            ratingA -= 5;
+            ratingB += 5;
+        }
+        updateUserRating(playerA, ratingA);
+        updateUserRating(playerB, ratingB);
+
         Record record = new Record(
                 null,
                 playerA.getId(),

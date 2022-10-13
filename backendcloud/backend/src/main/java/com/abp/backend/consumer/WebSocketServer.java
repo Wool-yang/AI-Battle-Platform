@@ -41,7 +41,7 @@ public class WebSocketServer {
     /*Spring 的容器管理默认是单例的，只会注入一次，
     而 WebSocket 是多对象的，每当有新的 Client 的时候都会创建一个新的实例对象
     可以把注入对象声明为静态对象*/
-    private static UserMapper userMapper;
+    public static UserMapper userMapper;
 
     public static RecordMapper recordMapper;
 

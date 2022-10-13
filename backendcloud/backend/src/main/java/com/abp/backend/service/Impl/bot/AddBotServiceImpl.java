@@ -5,6 +5,7 @@ import com.abp.backend.pojo.Bot;
 import com.abp.backend.pojo.User;
 import com.abp.backend.service.Impl.utils.UserDetailsImpl;
 import com.abp.backend.service.bot.AddBotService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,32 +36,40 @@ public class AddBotServiceImpl implements AddBotService {
         Map<String, String> map = new HashMap<>();
 
         if (title == null || title.length() == 0) {
-            map.put("error_message", "标题不能为空");
+            map.put("error_message", "Bot title cannot be empty");
             return map;
         }
 
         if (title.length() > 100) {
-            map.put("error_message", "Bot标题长度不能大于100");
+            map.put("error_message", "Bot title length cannot be greater than 100");
             return map;
         }
 
         if (description == null || description.length() == 0) {
-            description = "这个用户很懒，没有写代码描述";
+            description = "This user is lazy and did not write a code description";
         }
 
         if (description.length() > 300) {
-            map.put("error_message", "Bot描述长度不能大于300");
+            map.put("error_message", "Bot description length cannot be greater than 300");
             return map;
         }
 
 
         if (content == null || content.length() == 0) {
-            map.put("error_message", "代码不能为空");
+            map.put("error_message", "Code cannot be empty");
             return map;
         }
 
         if (description.length() > 10000) {
-            map.put("error_message", "代码长度不能大于10000");
+            map.put("error_message", "Code length cannot be greater than 10000");
+            return map;
+        }
+
+
+        QueryWrapper<Bot> botQueryWrapper = new QueryWrapper<>();
+        botQueryWrapper.eq("user_id", user.getId());
+        if (botMapper.selectCount(botQueryWrapper) >= 10) {
+            map.put("error_message", "A user can only create up to 10 bots");
             return map;
         }
 

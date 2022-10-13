@@ -11,7 +11,12 @@
         </div>
         <div class="col-4">
           <div class="user-select-bot">
-            <select v-model="selected_bot" class="form-select" aria-label="Default select example">
+            <select v-if="selected_status" v-model="selected_bot" class="form-select" disabled>
+              <option selected value="-1">Play in person</option>
+              <option v-for="bot in bots" :key="bot.id" :value="bot.id">{{ bot.title }}</option>
+            </select>
+
+            <select v-else v-model="selected_bot" class="form-select">
               <option selected value="-1">Play in person</option>
               <option v-for="bot in bots" :key="bot.id" :value="bot.id">{{ bot.title }}</option>
             </select>
@@ -48,6 +53,8 @@
       let bots = ref([]);
       let selected_bot = ref("-1");
 
+      let selected_status = ref(false);
+
       const click_match_btn = () => {
         if (match_btn_info.value === "Start Matching") {
           match_btn_info.value = "Stop";
@@ -59,6 +66,8 @@
             event: "start-matching",
             bot_id: selected_bot.value
           }));
+
+          selected_status.value = true;
         } else {
           match_btn_info.value = "Start Matching";
           match_btn_type.value = "success";
@@ -66,6 +75,8 @@
           store.state.pk.socket.send(JSON.stringify({
             event: "stop-matching",
           }));
+
+          selected_status.value = false;
         }
       };
 
@@ -83,14 +94,14 @@
       };
 
       refresh_bots();
-
-
+      
       return {
         match_btn_info,
         match_btn_type,
         click_match_btn,
         bots,
-        selected_bot
+        selected_bot,
+        selected_status
       }
     }
 }

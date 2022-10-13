@@ -21,7 +21,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         queryWrapper.eq("username", username);
         User user = userMapper.selectOne(queryWrapper);
         if (user == null) {
-            throw new RuntimeException("用户名或密码错误");
+            throw new RuntimeException("Wrong user name or password");
         }
 
         return new UserDetailsImpl(user);

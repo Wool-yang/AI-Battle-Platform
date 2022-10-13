@@ -4,15 +4,15 @@
       <div class="col-3">
         <form @submit.prevent="login">
           <div class="mb-3">
-            <label for="username" class="form-label">用户名</label>
-            <input v-model="username" type="text" class="form-control" id="username" placeholder="请输入用户名">
+            <label for="username" class="form-label">Username</label>
+            <input v-model="username" type="text" class="form-control" id="username" placeholder="Please enter your username">
           </div>
           <div class="mb-3">
-            <label for="password" class="form-label">密码</label>
-            <input v-model="password" type="password" class="form-control" id="password" placeholder="请输入密码">
+            <label for="password" class="form-label">Password</label>
+            <input v-model="password" type="password" class="form-control" id="password" placeholder="Please enter your password">
           </div>
           <div class="error-message">{{ error_message }}</div>
-          <button type="submit" class="btn btn-primary bt1">登录</button>
+          <button type="submit" class="btn btn-primary bt1">Login</button>
         </form> 
       </div>
     </div>
@@ -34,7 +34,6 @@
       let password = ref('');
       let error_message = ref('');
 
-      let url = store.state.user.page_before;
 
       const jwt_token = localStorage.getItem("jwt_token");
       if (jwt_token) {
@@ -42,9 +41,9 @@
         store.dispatch("getInfo", {
           success() {
             store.commit("updatePulledInfo", true);
-            if (url !== "") {
+            if (store.state.user.page_before !== "") {
+              router.push({name: store.state.user.page_before}); 
               store.commit("updatePageBefore", "");
-              router.push({name: url}); 
             } else {
               router.push({name: 'home'});
             }
@@ -67,21 +66,21 @@
           success() {
             store.dispatch("getInfo", {
               success() {
-                if (url !== "") {
+                if (store.state.user.page_before !== "") {
+                  router.push({name: store.state.user.page_before}); 
                   store.commit("updatePageBefore", "");
-                  router.push({name: url}); 
                 } else {
                   router.push({name: 'home'});
                 }
                 // console.log(store.state.user)
               },
               error() {
-                error_message.value = "用户名或密码错误"
+                error_message.value = "Wrong user name or password"
               }
             })
           },
           error() {
-            error_message.value = "用户名或密码错误"
+            error_message.value = "Wrong user name or password"
           }
         })
       }

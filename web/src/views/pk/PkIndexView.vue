@@ -22,6 +22,7 @@
     setup() {
       const store = useStore();
       store.commit("updateWinner", "none");
+      store.commit("updateIsRecord", false);
 
       const socketUrl = `ws://localhost:3000/websocket/${store.state.user.token}/`;
       let socket = null;

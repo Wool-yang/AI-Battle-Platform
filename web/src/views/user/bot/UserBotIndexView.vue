@@ -94,7 +94,7 @@
                 </tr>
               </thead>
               <tbody sy>
-                <tr v-for="bot in bots" :key="bot.id">
+                <tr v-for="bot in bots" :key="bot.id" style="vertical-align: middle;">
                   <td>{{ bot.title }}</td>
                   <td>{{ bot.createtime }}</td>
                   <td>

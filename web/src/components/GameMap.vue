@@ -34,13 +34,20 @@
         store.commit("updateGameMapObject", 
         new GameMap(canvas.value.getContext('2d'), parent.value, store));
 
-        if (store.state.pk.a_id === parseInt(store.state.user.id)) {
-          leftNotice.value = "You";
-          rightNotice.value = "Rival";
-        } else if (store.state.pk.b_id === parseInt(store.state.user.id)) {
-          leftNotice.value = "Rival";
-          rightNotice.value = "You";
+        if(store.state.record.is_record) {
+          leftNotice.value = store.state.record.a_username;
+          rightNotice.value = store.state.record.b_username;
+          console.log(leftNotice.value);
+        } else {
+          if (store.state.pk.a_id === parseInt(store.state.user.id)) {
+            leftNotice.value = "You";
+            rightNotice.value = "Rival";
+          } else if (store.state.pk.b_id === parseInt(store.state.user.id)) {
+            leftNotice.value = "Rival";
+            rightNotice.value = "You";
+          }
         }
+        
 
       });
 

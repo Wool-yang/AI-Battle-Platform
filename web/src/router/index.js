@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import PkIndexView from '@/views/pk/PkIndexView'
 import RecordIndexView from '@/views/record/RecordIndexView'
+import RecordContentView from '@/views/record/RecordContentView';
 import RanklistIndexView from '@/views/ranklist/RanklistIndexView'
 import UserBotIndexView from '@/views/user/bot/UserBotIndexView'
 import NotFound from '@/views/error/NotFound'
@@ -28,6 +29,14 @@ const routes = [
     path: "/record/",
     name: "record_index",
     component: RecordIndexView,
+    meta: {
+      requireAuth: true
+    }
+  },
+  {
+    path: "/record/:recordId/",
+    name: "record_content",
+    component: RecordContentView,
     meta: {
       requireAuth: true
     }
@@ -81,6 +90,9 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  if (to.name === "record_content" && !store.state.record.is_record) {
+    next({name: "record_index"});
+  }
   if (to.meta.requireAuth && !store.state.user.is_login) {
     store.commit("updatePageBefore", to.name)
     next({name: "user_account_login"});
