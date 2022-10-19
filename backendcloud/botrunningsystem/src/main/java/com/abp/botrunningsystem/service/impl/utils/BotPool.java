@@ -13,10 +13,10 @@ public class BotPool extends Thread {
     private Queue<Bot> bots = new LinkedList<>();
 
     // 生产者线程往 bots 中增加任务
-    public void addBot(Integer userId, String botCode, String input) {
+    public void addBot(Integer userId, Integer oppoId, String botCode, String input) {
         lock.lock();
         try {
-            bots.add(new Bot(userId, botCode, input));
+            bots.add(new Bot(userId, oppoId, botCode, input));
             condition.signalAll();              // 唤醒所有线程
         } finally {
             lock.unlock();

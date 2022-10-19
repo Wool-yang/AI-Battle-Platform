@@ -1,25 +1,31 @@
 <template>
   <ContentField>
-    <table class="table table-hover" style="text-align: center">
+    <table class="table table-hover">
       <thead>
         <tr>
-          <th>playerA</th>
-          <th>playerB</th>
-          <th>winner</th>
-          <th>time</th>
-          <th></th>
+          <th style="width: 4%;"></th>
+          <th style="width: 5%;">playerA</th>
+          <th style="width: 15%;"></th>
+          <th style="width: 5%;">playerB</th>
+          <th style="width: 15%;"></th>
+          <th style="width: 15%">winner</th>
+          <th style="width: 19%">time</th>
+          <th style="width: 12%"></th>
         </tr>
       </thead>
       <tbody sy>
         <tr v-for="record in records" :key="record.record.id" style="vertical-align: middle;">
+          <td></td>
           <td>
-            <img :src="record.a_photo" alt="" class="record-user-photo">
-            &nbsp;
+            <img :src="'/static/images/avatar/' + record.a_photo + '.png'" alt="" class="record-user-photo">
+          </td>
+          <td>
             <span class="record-user-username">{{ record.a_username }}</span>
           </td>
           <td>
-            <img :src="record.b_photo" alt="" class="record-user-photo">
-            &nbsp;
+            <img :src="'/static/images/avatar/' + record.b_photo + '.png'" alt="" class="record-user-photo">
+          </td>
+          <td>
             <span class="record-user-username">{{ record.b_username }}</span>
           </td>
           <td>
@@ -43,13 +49,17 @@
       <nav style="margin-top: 2.5vh;" aria-label="Page navigation example">
         <ul class="pagination">
           <li class="page-item" @click="to_page(-2)">
-            <a class="page-link" href="javascript:void(0)">Previous</a>
+            <a class="page-link" href="javascript:void(0)" aria-label="Previous">
+              <span aria-hidden="true">&nbsp;&laquo;&nbsp;</span>
+            </a>
           </li>
           <li @click="to_page(page.number)" :class="'page-item ' + page.is_active" v-for="page in pages" :key="page.number" >
             <a class="page-link" href="javascript:void(0)">{{ page.number }}</a>
           </li>
           <li class="page-item" @click="to_page(-1)">
-            <a class="page-link" href="javascript:void(0)">Next</a>
+            <a class="page-link" href="javascript:void(0)" aria-label="Next">
+              <span aria-hidden="true">&nbsp;&raquo;&nbsp;</span>
+            </a>
           </li>
         </ul>
       </nav>
@@ -113,7 +123,7 @@
       const pull_pages = page => {
         current_page = page;
         $.ajax({
-          url: "http://localhost:3000/record/getlist/",
+          url: "http://127.0.0.1:3000/api/record/getlist/",
           type: "GET",
           data: {
             page
@@ -126,9 +136,6 @@
             total_records = resp.records_count;
             max_pages.value = parseInt(Math.ceil(total_records / 10));
             update_pages();
-          },
-          error(resp) {
-            console.log(resp);
           }
         })
       };
@@ -203,8 +210,10 @@
 
 <style scoped>
 img.record-user-photo {
-  width: 5vh;
   border-radius: 50%;
+  width: 7vh;
+  height: 7vh;
+  object-fit: cover;
 }
 div.mypagination {
   margin-right: 5%;
@@ -213,5 +222,11 @@ div.mypagination {
   align-items: center;
   justify-content: flex-end;
   flex-wrap: wrap;
+}
+table {
+  table-layout: fixed;
+}
+th {
+  white-space: nowrap;
 }
 </style>

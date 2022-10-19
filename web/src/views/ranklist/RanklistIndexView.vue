@@ -1,22 +1,28 @@
 <template>
   <ContentField>
-    <table class="table table-hover" style="text-align: center">
+    <table class="table table-hover">
       <thead>
         <tr>
+          <th></th>
           <th>player</th>
+          <th></th>
           <th>rating</th>
+          <th></th>
         </tr>
       </thead>
       <tbody sy>
         <tr v-for="user in users" :key="user.id" style="vertical-align: middle;">
+          <td style="width: 15%;"></td>
+          <td style="width: 5%;">
+            <img :src="'/static/images/avatar/' + user.photo + '.png'" alt="" class="user-photo">
+          </td>
           <td>
-            <img :src="user.photo" alt="" class="user-photo">
-            &nbsp;
             <span class="user-username">{{ user.username }}</span>
           </td>
           <td>
             {{ user.rating }}
           </td>
+          <td style="width: 15%;"></td>
         </tr>
       </tbody>
     </table>
@@ -29,13 +35,17 @@
       <nav style="margin-top: 2.5vh;" aria-label="Page navigation example">
         <ul class="pagination">
           <li class="page-item" @click="to_page(-2)">
-            <a class="page-link" href="javascript:void(0)">Previous</a>
+            <a class="page-link" href="javascript:void(0)" aria-label="Previous">
+              <span aria-hidden="true">&nbsp;&laquo;&nbsp;</span>
+            </a>
           </li>
           <li @click="to_page(page.number)" :class="'page-item ' + page.is_active" v-for="page in pages" :key="page.number" >
             <a class="page-link" href="javascript:void(0)">{{ page.number }}</a>
           </li>
           <li class="page-item" @click="to_page(-1)">
-            <a class="page-link" href="javascript:void(0)">Next</a>
+            <a class="page-link" href="javascript:void(0)" aria-label="Previous">
+              <span aria-hidden="true">&nbsp;&raquo;&nbsp;</span>
+            </a>
           </li>
         </ul>
       </nav>
@@ -98,7 +108,7 @@
       const pull_pages = page => {
         current_page = page;
         $.ajax({
-          url: "http://localhost:3000/ranklist/getlist/",
+          url: "http://127.0.0.1:3000/api/ranklist/getlist/",
           type: "GET",
           data: {
             page
@@ -111,21 +121,12 @@
             total_users = resp.users_count;
             max_pages.value = parseInt(Math.ceil(total_users / 10));
             update_pages();
-          },
-          error(resp) {
-            console.log(resp);
           }
         })
       };
 
       pull_pages(current_page);
       
-      setInterval(() => {
-        console.log("current_page: " + current_page + "\n" +
-                    "total_users: " + total_users + "\n" + 
-                    "jump_page: " + jump_page.value + "\n" +
-                    "max_pages: " + max_pages.value + "\n");
-      }, 500);
       return {
         users,
         total_users,
@@ -141,8 +142,10 @@
 
 <style scoped>
 img.user-photo {
-  width: 5vh;
   border-radius: 50%;
+  width: 7vh;
+  height: 7vh;
+  object-fit: cover;
 }
 div.mypagination {
   margin-right: 5%;

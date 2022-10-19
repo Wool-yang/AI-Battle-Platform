@@ -12,7 +12,7 @@ public class LoginController {
     @Autowired
     private LoginService loginService;
 
-    @PostMapping("/user/account/token")
+    @PostMapping("/api/user/account/token")
     // 这边用 @RequestParam 接收的是 url 中的 params
     public Map<String, String> getToken(@RequestParam Map<String, String> map) {
         String username = map.get("username");

@@ -33,7 +33,7 @@
       </div>
       <div class="row">
         <div class="col-12" style="text-align:center;">
-          <button type="button" @click="click_match_btn" :class="'btn btn-' + match_btn_type + ' btn-lg'" style="margin-top:17vh;">{{ match_btn_info }}</button>
+          <button type="button" @click="click_match_btn" :class="'btn btn-' + $store.state.pk.btn_type + ' btn-lg'" style="margin-top:11vh;">{{ $store.state.pk.btn_value }}</button>
         </div>
       </div>
   </div>
@@ -48,17 +48,17 @@
     name: "MatchGround",
     components: {  },
     setup() {
-      let match_btn_info = ref("Start Matching");
-      let match_btn_type = ref("success");
       let bots = ref([]);
       let selected_bot = ref("-1");
 
       let selected_status = ref(false);
 
       const click_match_btn = () => {
-        if (match_btn_info.value === "Start Matching") {
-          match_btn_info.value = "Stop";
-          match_btn_type.value = "warning";
+        if (store.state.pk.btn_value === "Start Matching") {
+          store.commit("updateMatchingBtn", {
+            btn_value: "Stop",
+            btn_type: "warning"
+          })
 
           // 向后端发送消息
           // 传递一个 域 来表示当前操作
@@ -69,8 +69,10 @@
 
           selected_status.value = true;
         } else {
-          match_btn_info.value = "Start Matching";
-          match_btn_type.value = "success";
+          store.commit("updateMatchingBtn", {
+            btn_value: "Start Matching",
+            btn_type: "success"
+          })
 
           store.state.pk.socket.send(JSON.stringify({
             event: "stop-matching",
@@ -82,7 +84,7 @@
 
       const refresh_bots = () => {
         $.ajax({
-          url: "http://localhost:3000/user/bot/getall/",
+          url: "http://127.0.0.1:3000/api/user/bot/getall/",
           type: "GET",
           headers: {
             Authorization: "Bearer " + store.state.user.token,
@@ -96,8 +98,6 @@
       refresh_bots();
       
       return {
-        match_btn_info,
-        match_btn_type,
         click_match_btn,
         bots,
         selected_bot,
@@ -111,8 +111,8 @@
   div.matchground {
     width: 70vw;
     height: 75vh;
-    margin: 7vh auto;
-    background-color: rgba(50, 50, 50, 0.5);
+    margin: 3vh auto;
+    background-color: rgba(255, 255, 255, 0.2);
     border-radius: 5vh;
   }
   div.user-photo {
@@ -121,7 +121,9 @@
   }
   div.user-photo > img {
     border-radius: 50%;
-    width: 30vh;
+    width: 15vw;
+    height: 15vw;
+    object-fit: cover;
   }
   div.user-username {
     text-align: center;

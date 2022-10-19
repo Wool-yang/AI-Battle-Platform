@@ -36,8 +36,13 @@
         store.commit("updateOpponent", {
           username: "Opponent",
           photo: "https://cdn.acwing.com/media/article/image/2022/08/09/1_1db2488f17-anonymous.png"
-        })
-      }
+        });
+
+        store.commit("updateMatchingBtn", {
+          btn_value: "Start Matching",
+          btn_type: "success"
+        });
+      };
 
       return {
         restart
@@ -52,8 +57,8 @@
     width: 30vw;
     background-color: rgba(50, 50, 50, 0.5);
     position: absolute;
-    top: 30vh;
-    left: 35vw;
+    top: 45vh;
+    left: 34.5vw;
     border-radius: 5vh;
   }
   div.result-board-text {

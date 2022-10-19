@@ -16,11 +16,14 @@ export default ({
     updateUser(state, user) {
       state.id = user.id;
       state.username = user.username;
-      state.photo = user.photo;
+      state.photo = "/static/images/avatar/" + user.photo + ".png";
       state.is_login = user.is_login;
     },
     updateToken(state, token) {
       state.token = token;
+    },
+    updatePhoto(state, photo) {
+      state.photo = photo;
     },
     logout(state) {
       state.id = "";
@@ -41,7 +44,7 @@ export default ({
   actions: {
     login(context, data) {
       $.ajax({
-        url: "http://localhost:3000/user/account/token/",
+        url: "http://127.0.0.1:3000/api/user/account/token/",
         type: "POST",
         data: {
           username: data.username,
@@ -63,7 +66,7 @@ export default ({
     },
     getInfo(context, data) {
       $.ajax({
-        url: "http://localhost:3000/user/account/info/",
+        url: "http://127.0.0.1:3000/api/user/account/info/",
         type: "GET",
         headers: {
           Authorization: "Bearer " + context.state.token,

@@ -4,7 +4,7 @@
       <div class="col-3">
         <div class="card mt-4">
           <div class="card-body">
-            <img :src="$store.state.user.photo" alt="" style="width: 100%;"/>
+            <img :src="$store.state.user.photo" alt="" class="user-photo"/>
           </div>
         </div>
       </div>
@@ -131,7 +131,7 @@
                           </div>
                           <select v-model="aceEdit.language" class="form-select" aria-label="Default select example">
                             <option selected value="java">Java</option>
-                            <option value="c_cpp">C++</option>
+                            <option value="c_cpp">C++ (not available now)</option>
                           </select>
                         </div>
                         
@@ -270,7 +270,7 @@
 
       const refresh_bots = () => {
         $.ajax({
-          url: "http://localhost:3000/user/bot/getall/",
+          url: "http://127.0.0.1:3000/api/user/bot/getall/",
           type: "GET",
           headers: {
             Authorization: "Bearer " + store.state.user.token,
@@ -286,7 +286,7 @@
       const add_bot = () => {
         bot_add.error_message = "";
         $.ajax({
-          url: "http://localhost:3000/user/bot/add/",
+          url: "http://127.0.0.1:3000/api/user/bot/add/",
           type: "POST",
           headers: {
             Authorization: "Bearer " + store.state.user.token,
@@ -311,7 +311,7 @@
 
       const remove_bot = (bot) => {
         $.ajax({
-          url: "http://localhost:3000/user/bot/remove/",
+          url: "http://127.0.0.1:3000/api/user/bot/remove/",
           type: "DELETE",
           headers: {
             Authorization: "Bearer " + store.state.user.token,
@@ -331,7 +331,7 @@
       const update_bot = (bot) => {
         bot.error_message = "";
         $.ajax({
-          url: "http://localhost:3000/user/bot/update/",
+          url: "http://127.0.0.1:3000/api/user/bot/update/",
           type: "PUT",
           headers: {
             Authorization: "Bearer " + store.state.user.token,
@@ -396,5 +396,10 @@
     align-items: center; 
     justify-content: space-between;
     margin: 0 3% 10px 3%;
+  }
+  .user-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 </style>

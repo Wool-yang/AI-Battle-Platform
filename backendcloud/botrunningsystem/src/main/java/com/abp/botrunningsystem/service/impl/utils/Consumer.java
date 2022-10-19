@@ -8,7 +8,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 @Component
 public class Consumer extends Thread {
@@ -39,7 +43,7 @@ public class Consumer extends Thread {
 
     // 在 code 中的 Bot 类名后加 uid
     private String addUid(String code, String uid) {
-        int k = code.indexOf(" implements com.abp.botrunningsystem.utils.BotInterface");
+        int k = code.indexOf(" implements java.util.function.Supplier<Integer>");
         return code.substring(0, k) + uid + code.substring(k);
     }
 
@@ -49,16 +53,25 @@ public class Consumer extends Thread {
         String uid = uuid.toString().substring(0, 8);
 
         // joor 执行代码需要保证类名不一致，一个类名只会编译一次
-        BotInterface botInterface = Reflect.compile("com.abp.botrunningsystem.utils.Bot" + uid,
+        Supplier<Integer> botInterface = Reflect.compile("com.abp.botrunningsystem.utils.Bot" + uid,
                 addUid(bot.getBotCode(), uid)).create().get();
 
-        Integer direction = botInterface.nextMove(bot.getInput());
+        File file = new File("input.txt");
+        try (PrintWriter fout = new PrintWriter(file)) {
+            fout.println(bot.getInput());
+            fout.flush();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        Integer direction = botInterface.get();
 
         MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
         data.add("user_id", bot.userId.toString());
+        data.add("oppo_id", bot.oppoId.toString());
         data.add("direction", direction.toString());
 
         restTemplate.postForObject(receiveBotUrl, data, String.class);
-        System.out.println("move-direction: " + bot.userId  + " " + direction);
+        // System.out.println("move-direction: " + bot.userId  + " " + direction);
     }
 }

@@ -17,7 +17,8 @@ public class ReceiveBotMoveController {
     @PostMapping("/pk/receive/bot/move/")
     public String receiveBotMove(@RequestParam MultiValueMap<String, String> data) {
         Integer userId = Integer.parseInt(Objects.requireNonNull(data.getFirst("user_id")));
+        Integer oppoId = Integer.parseInt(Objects.requireNonNull(data.getFirst("oppo_id")));
         Integer direction = Integer.parseInt(Objects.requireNonNull(data.getFirst("direction")));
-        return receiveBotMoveService.receiveBotMove(userId, direction);
+        return receiveBotMoveService.receiveBotMove(userId, oppoId, direction);
     }
 }

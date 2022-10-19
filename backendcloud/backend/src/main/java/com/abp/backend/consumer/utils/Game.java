@@ -31,7 +31,7 @@ public class Game extends Thread{
 
     private ReentrantLock lock = new ReentrantLock();   // 加锁解决两个线程同时写同一变量
 
-    private String status = "playing";                  // 记录游戏状态 playing -> finished
+    public String status = "playing";                  // 记录游戏状态 playing -> finished
 
     private final static int[] dx = {-1, 0, 1, 0}, dy = {0, 1, 0, -1};
 
@@ -172,15 +172,27 @@ public class Game extends Thread{
     }
 
     // 判断当前玩家是否是 bot
-    private void sendBotCode(Player player) {
-        if (player.getBotId().equals(-1))
-            return;
+    private void sendBotCode(Player playerA, Player playerB) {
+//        if (player.getBotId().equals(-1))
+//            return;
 
-        MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
-        data.add("user_id", player.getId().toString());
-        data.add("bot_code", player.getBotCode());
-        data.add("input", getInput(player));
-        WebSocketServer.restTemplate.postForObject(addBotUrl, data, String.class);
+        if (!playerA.getBotId().equals(-1)) {
+            MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
+            data.add("user_id", playerA.getId().toString());
+            data.add("oppo_id", playerB.getId().toString());
+            data.add("bot_code", playerA.getBotCode());
+            data.add("input", getInput(playerA));
+            WebSocketServer.restTemplate.postForObject(addBotUrl, data, String.class);
+        }
+
+        if (!playerB.getBotId().equals(-1)) {
+            MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
+            data.add("user_id", playerB.getId().toString());
+            data.add("oppo_id", playerA.getId().toString());
+            data.add("bot_code", playerB.getBotCode());
+            data.add("input", getInput(playerB));
+            WebSocketServer.restTemplate.postForObject(addBotUrl, data, String.class);
+        }
     }
 
     //等待两名玩家的下一步操作
@@ -195,8 +207,7 @@ public class Game extends Thread{
             e.printStackTrace();
         }
 
-        sendBotCode(playerA);
-        sendBotCode(playerB);
+        sendBotCode(playerA, playerB);
 
         for (int i = 0; i < 25; i++ ) {
             try {
@@ -238,18 +249,39 @@ public class Game extends Thread{
         WebSocketServer.userMapper.updateById(user);
     }
 
+    private Boolean check_isNotBot(Player player) {
+        return !player.getId().equals(1) && !player.getId().equals(2) && !player.getId().equals(3);
+    }
+
+    private void updateUserLastFinish(Player player, Date now) {
+        User user = WebSocketServer.userMapper.selectById(playerA.getId());
+        user.setLastFinish(now);
+        WebSocketServer.userMapper.updateById(user);
+    }
+
     private void saveToDatabase() {
         Integer ratingA = WebSocketServer.userMapper.selectById(playerA.getId()).getRating();
         Integer ratingB = WebSocketServer.userMapper.selectById(playerB.getId()).getRating();
-        if ("A".equals(winner)) {
-            ratingA += 5;
-            ratingB -= 5;
-        } else if ("B".equals(winner)) {
-            ratingA -= 5;
-            ratingB += 5;
+        if (check_isNotBot(playerA) && check_isNotBot(playerB)) {
+            if ("A".equals(winner)) {
+                ratingA += 5;
+                ratingB -= 5;
+            } else if ("B".equals(winner)) {
+                ratingA -= 5;
+                ratingB += 5;
+            }
+            updateUserRating(playerA, ratingA);
+            updateUserRating(playerB, ratingB);
         }
-        updateUserRating(playerA, ratingA);
-        updateUserRating(playerB, ratingB);
+
+        Date now = new Date();
+        if (check_isNotBot(playerA)) {
+            updateUserLastFinish(playerA, now);
+        }
+
+        if (check_isNotBot(playerB)) {
+            updateUserLastFinish(playerB, now);
+        }
 
         Record record = new Record(
                 null,
@@ -263,7 +295,7 @@ public class Game extends Thread{
                 playerB.getStepsString(),
                 getMapString(),
                 winner,
-                new Date()
+                now
         );
 
         WebSocketServer.recordMapper.insert(record);

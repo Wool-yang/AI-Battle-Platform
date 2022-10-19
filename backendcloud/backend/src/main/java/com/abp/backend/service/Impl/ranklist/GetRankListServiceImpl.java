@@ -22,6 +22,7 @@ public class GetRankListServiceImpl implements GetRankListService {
         IPage<User> userIPage = new Page<>(page, 10);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByDesc("rating");
+        queryWrapper.ne("id", 1).ne("id", 2).ne("id", 3);
 
         List<User> users = userMapper.selectPage(userIPage, queryWrapper).getRecords();
         JSONObject resp = new JSONObject();
@@ -29,7 +30,7 @@ public class GetRankListServiceImpl implements GetRankListService {
         for (User user : users) {
             user.setPassword("");
         }
-        resp.put("users_count", userMapper.selectCount(null));
+        resp.put("users_count", userMapper.selectCount(queryWrapper));
         resp.put("users", users);
         return  resp;
     }

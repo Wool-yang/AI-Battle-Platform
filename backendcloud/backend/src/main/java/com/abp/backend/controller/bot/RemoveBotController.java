@@ -14,7 +14,7 @@ public class RemoveBotController {
     @Autowired
     private RemoveBotService removeBotService;
 
-    @DeleteMapping("/user/bot/remove")
+    @DeleteMapping("/api/user/bot/remove")
     public Map<String, String> removeBot(@RequestParam Map<String, String> data) {
         return removeBotService.removeBot(data);
     }

@@ -45,7 +45,7 @@
               router.push({name: store.state.user.page_before}); 
               store.commit("updatePageBefore", "");
             } else {
-              router.push({name: 'home'});
+              router.push({name: 'home_index'});
             }
           },
           error() {
@@ -70,7 +70,7 @@
                   router.push({name: store.state.user.page_before}); 
                   store.commit("updatePageBefore", "");
                 } else {
-                  router.push({name: 'home'});
+                  router.push({name: 'home_index'});
                 }
                 // console.log(store.state.user)
               },

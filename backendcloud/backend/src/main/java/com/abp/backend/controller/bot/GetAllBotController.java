@@ -14,7 +14,7 @@ public class GetAllBotController {
     @Autowired
     private GetAllBotService getAllBotService;
 
-    @GetMapping("/user/bot/getall/")
+    @GetMapping("/api/user/bot/getall/")
     public List<Bot> getAllBot() {
         return getAllBotService.GetAllBot();
     }

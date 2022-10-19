@@ -9,6 +9,7 @@ import com.abp.backend.pojo.Bot;
 import com.abp.backend.pojo.User;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -19,9 +20,9 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.Date;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 @Component
 // 映射的链接
@@ -81,7 +82,7 @@ public class WebSocketServer {
     public void onOpen(Session session, @PathParam("token") String token) throws IOException {
         // 建立连接
         this.session = session;
-        System.out.println("connected!");
+        // System.out.println("connected!");
 
         // 解析 token 获取 userId
         Integer userId = JwtAuthentication.getUserId(token);
@@ -96,10 +97,19 @@ public class WebSocketServer {
     @OnClose
     public void onClose() {
         // 关闭链接
-        System.out.println("disconnected!");
+        // System.out.println("disconnected!");
         if (this.user != null) {
             users.remove(this.user.getId());
         }
+    }
+
+    private static void updateUserLastStart(User user, Date now) {
+        user.setLastStart(now);
+        WebSocketServer.userMapper.updateById(user);
+    }
+
+    private static Boolean check_isNotBot(User user) {
+        return !user.getId().equals(1) && !user.getId().equals(2) && !user.getId().equals(3);
     }
 
     public static void startGame(Integer aId, Integer aBotId, Integer bId, Integer bBotId) {
@@ -128,6 +138,15 @@ public class WebSocketServer {
 
         game.start();
 
+        Date now = new Date();
+        if (check_isNotBot(a)) {
+            updateUserLastStart(a, now);
+        }
+
+        if (check_isNotBot(b)) {
+            updateUserLastStart(b, now);
+        }
+
         // 将地图相关信息封装
         JSONObject respGame = new JSONObject();
         respGame.put("a_id", game.getPlayerA().getId());
@@ -145,13 +164,13 @@ public class WebSocketServer {
         // event 区分信息
         respA.put("event", "start-matching");
         respA.put("opponent_username", b.getUsername());
-        respA.put("opponent_photo", b.getPhoto());
+        respA.put("opponent_photo", b.getPhoto().toString());
         respA.put("game", respGame);
 
         JSONObject respB = new JSONObject();
         respB.put("event", "start-matching");
         respB.put("opponent_username", a.getUsername());
-        respB.put("opponent_photo", a.getPhoto());
+        respB.put("opponent_photo", a.getPhoto().toString());
         respB.put("game", respGame);
 
         // 将返回信息发送回前端
@@ -162,7 +181,7 @@ public class WebSocketServer {
     }
 
     private void startMatching(Integer botId) {
-        System.out.println("start-matching");
+        // System.out.println("start-matching");
 
         MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
         data.add("user_id", this.user.getId().toString());
@@ -174,7 +193,7 @@ public class WebSocketServer {
     }
 
     private void stopMatching() {
-        System.out.println("stop-matching");
+        // System.out.println("stop-matching");
 
         MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
         data.add("user_id", this.user.getId().toString());
@@ -193,22 +212,86 @@ public class WebSocketServer {
         }
     }
 
+    private long get_delta_seconds(long delta) {
+        long day = delta / (24 * 60 * 60 * 1000);
+        long hour = (delta / (60 * 60 * 1000) - day * 24);
+        long min = ((delta / (60 * 1000)) - day * 24 * 60 - hour * 60);
+        long s = (delta / 1000 - day * 24 * 60 * 60 - hour * 60 * 60 - min * 60);
+
+        return s;
+    }
+
+    private Boolean check_lastGame() {
+        Date lastStart = WebSocketServer.userMapper.selectById(user.getId()).getLastStart();
+        Date lastFinish = WebSocketServer.userMapper.selectById(user.getId()).getLastFinish();
+
+        if (lastStart == null) {
+            return true;
+        }
+
+        Date now = new Date();
+
+        long startLong = lastStart.getTime();
+        long FinishLong = lastFinish.getTime();
+        long nowLong = now.getTime();
+
+        long deltaStart = Math.abs(nowLong - startLong);
+        long deltaFinish = nowLong - FinishLong;
+
+        long startS = get_delta_seconds(deltaStart);
+
+        if (startS < 6) {
+            return false;
+        }
+
+        if (deltaFinish < 0) {
+            return false;
+        }
+
+        return true;
+    }
+
     // Server 接收到 Client 信息时触发
     // 当做路由来使用，判断当前消息应该交由哪一个函数进行处理
     @OnMessage
     public void onMessage(String message, Session session) {
         // 从 Client 接收消息
-        System.out.println("receive message!");
+        // System.out.println("receive message!");
         JSONObject data = JSON.parseObject(message);
 
         String event = data.getString("event");
 
         if ("start-matching".equals(event)) {
-            startMatching(data.getInteger("bot_id"));
+            if (check_lastGame()) {
+                startMatching(data.getInteger("bot_id"));
+            } else {
+                JSONObject resp = new JSONObject();
+                resp.put("event", "error_matching");
+                sendMessage(resp.toJSONString());
+            }
         } else if ("stop-matching".equals(event)) {
             stopMatching();
         } else if ("move".equals(event)) {
             move(data.getInteger("direction"));
+        } else if ("start-robot-game".equals(event)) {
+            // System.out.println("start-robot-game");
+            Integer tachiId = data.getInteger("tachi_id");
+            QueryWrapper<Bot> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("user_id", tachiId);
+            Bot tachiBot = botMapper.selectOne(queryWrapper);
+
+            if (check_lastGame()) {
+                Random random = new Random();
+                int ran = random.nextInt(10);
+                if (ran >= 5)
+                    startGame(tachiId, tachiBot.getId(), this.user.getId(), data.getInteger("bot_id"));
+                else
+                    startGame(this.user.getId(), data.getInteger("bot_id"), tachiId, tachiBot.getId());
+            } else {
+                JSONObject resp = new JSONObject();
+                resp.put("event", "error_start");
+                sendMessage(resp.toJSONString());
+            }
         }
     }
 

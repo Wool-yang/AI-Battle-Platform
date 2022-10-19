@@ -29,6 +29,13 @@ public class MatchingPool extends Thread {
     public void addPlayer(Integer userId, Integer rating, Integer botId) {
         lock.lock();
         try {
+            List<Player> newPlayers = new ArrayList<>();
+            for (Player player : players) {
+                if (!player.getUserId().equals(userId) && player.getWaitingTime() <= 600) {
+                    newPlayers.add(player);
+                }
+            }
+            players = newPlayers;
             players.add(new Player(userId, rating, botId, 0));
         } finally {
             lock.unlock();
@@ -66,7 +73,7 @@ public class MatchingPool extends Thread {
 
     // 返回玩家 a, b 的匹配结果
     private void sendResult(Player a, Player b) {
-        System.out.println("match success: " + a.getUserId() + " " + b.getUserId());
+        // System.out.println("match success: " + a.getUserId() + " " + b.getUserId());
         MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
         data.add("a_id", a.getUserId().toString());
         data.add("a_bot_id", a.getBotId().toString());
@@ -77,7 +84,7 @@ public class MatchingPool extends Thread {
 
     // 尝试匹配所有玩家
     private void matchPlayers() {
-        System.out.println("match players: " + players.toString());
+        // System.out.println("match players: " + players.toString());
         boolean[] used = new boolean[players.size()];
         // 索引越小的 player，waitingTime 越大
         for (int i = 0; i < players.size(); i ++ ) {

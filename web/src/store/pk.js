@@ -16,6 +16,9 @@ export default ({
     game_map_object: null,
 
     winner: "none",       // none, all, A, B
+
+    btn_value: "Start Matching",
+    btn_type: "success"
   },
   getters: {
   },
@@ -25,7 +28,12 @@ export default ({
     },
     updateOpponent(state, opponent) {
       state.opponent_username = opponent.username;
-      state.opponent_photo = opponent.photo;
+      if (opponent.photo.length <= 3) {
+        state.opponent_photo = "/static/images/avatar/" + opponent.photo + ".png";
+        // console.log(state.opponent_photo);
+      } else {
+        state.opponent_photo = opponent.photo;
+      }
     },
     updateStatus(state, status) {
       state.status = status;
@@ -44,6 +52,10 @@ export default ({
     },
     updateWinner(state, winner) {
       state.winner = winner;
+    },
+    updateMatchingBtn(state, btn) {
+      state.btn_value = btn.btn_value;
+      state.btn_type = btn.btn_type;
     }
   },
   modules: {

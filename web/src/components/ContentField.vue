@@ -14,7 +14,7 @@
   };
 </script>
       
-<style>
+<style scoped>
   .content-field {
     margin-top: 25px;
   }
