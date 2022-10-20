@@ -12,7 +12,7 @@
         <router-link :class="route_name == 'pk_robot_index' ? 'nav-link active' : 'nav-link' + ' my-nav-item'" aria-current="page" :to="{name: 'pk_robot_index'}">Battle with Robots</router-link>
       </li>
       <li class="nav-item">
-        <router-link :class="route_n+ame == 'record_index' ? 'nav-link active' : 'nav-link' + ' my-nav-item'" :to="{name: 'record_index'}">Battle List</router-link>
+        <router-link :class="route_name == 'record_index' ? 'nav-link active' : 'nav-link' + ' my-nav-item'" :to="{name: 'record_index'}">Battle List</router-link>
       </li>
       <li class="nav-item">
         <router-link :class="route_name == 'ranklist_index' ? 'nav-link active' : 'nav-link' + ' my-nav-item'" :to="{name: 'ranklist_index'}">Rank List</router-link>
@@ -26,13 +26,13 @@
 
 
   <div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
-    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" ref="toastRef">
+    <div class="toast" style="width: 45vw" role="alert" aria-live="assertive" aria-atomic="true" ref="toastRef">
       <div class="toast-header">
         <img src="@/assets/images/snake.jpg" class="rounded me-2" alt="">
-        <strong class="me-auto">Please wait a moment</strong>
+        <strong class="me-auto" style="font-size: medium;">Please wait a moment</strong>
         <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
       </div>
-      <div class="toast-body">
+      <div class="toast-body" style="font-size: medium;">
         It is detected that your last game is not over or the game interval is too short, please wait at least 5 seconds before restarting
       </div>
     </div>

@@ -76,7 +76,7 @@
 
             <!-- Update-Profile-Modal -->
             <div class="modal fade" id="update-profile" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-              <div class="modal-dialog modal-xl">
+              <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                   <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Edit Profile</h5>
@@ -85,8 +85,12 @@
                   <div class="modal-body">
                     <form>
                       <div class="mb-3">
+                        <label for="my-username" class="col-form-label">Username</label>
+                        <input v-model="update_info.username" type="text" class="form-control" id="my-username">
+                      </div>
+                      <div class="mb-3">
                         <label for="my-email" class="col-form-label">Email</label>
-                        <input v-model="update_info.email" type="email" class="form-control" id="myemail">
+                        <input v-model="update_info.email" type="email" class="form-control" id="my-email">
                       </div>
                       <div class="mb-3">
                         <label for="my-phone" class="col-form-label">Phone</label>
@@ -109,7 +113,7 @@
 
             <!-- Update-Password--Modal -->
             <div class="modal fade" id="update-password" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-              <div class="modal-dialog modal-xl">
+              <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                   <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Change password</h5>
@@ -169,8 +173,7 @@
       })
 
       const update_info = reactive({
-        rating: "",
-        last_game: "",
+        username: "",
         email: "",
         phone: "",
         other: "",
@@ -262,6 +265,7 @@
           url: "http://127.0.0.1:3000/api/user/account/updatedetailinfo/",
           type: "PUT",
           data: {
+            username: update_info.username,
             email: update_info.email,
             phone: update_info.phone,
             other: update_info.other
@@ -272,6 +276,7 @@
           success(resp) {
             if (resp.error_message === "success") {
               getDetailInfo();
+              store.commit("updateUsername", update_info.username);
               Modal.getInstance('#update-profile').hide();
             } else {
               update_info.error_message = resp.error_message;
@@ -314,6 +319,7 @@
       };
 
       const set_update_info = () => {
+        update_info.username = store.state.user.username;
         update_info.email = info.email;
         update_info.phone = info.phone;
         update_info.other = info.other;

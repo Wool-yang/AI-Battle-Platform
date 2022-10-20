@@ -23,6 +23,7 @@ public class User {
     private Date lastStart;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date lastFinish;
+    private Boolean isGaming;
     private String email;
     private String phone;
     private String other;

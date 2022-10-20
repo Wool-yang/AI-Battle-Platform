@@ -11,7 +11,7 @@
         </div>
         <div class="col-4">
           <div class="user-select-bot">
-            <select v-if="selected_status" v-model="selected_bot" class="form-select" disabled>
+            <select v-if="$store.state.pk.btn_value === 'Stop'" v-model="selected_bot" class="form-select" disabled>
               <option selected value="-1">Play in person</option>
               <option v-for="bot in bots" :key="bot.id" :value="bot.id">{{ bot.title }}</option>
             </select>
@@ -51,8 +51,6 @@
       let bots = ref([]);
       let selected_bot = ref("-1");
 
-      let selected_status = ref(false);
-
       const click_match_btn = () => {
         if (store.state.pk.btn_value === "Start Matching") {
           store.commit("updateMatchingBtn", {
@@ -66,8 +64,6 @@
             event: "start-matching",
             bot_id: selected_bot.value
           }));
-
-          selected_status.value = true;
         } else {
           store.commit("updateMatchingBtn", {
             btn_value: "Start Matching",
@@ -77,8 +73,6 @@
           store.state.pk.socket.send(JSON.stringify({
             event: "stop-matching",
           }));
-
-          selected_status.value = false;
         }
       };
 
@@ -100,8 +94,7 @@
       return {
         click_match_btn,
         bots,
-        selected_bot,
-        selected_status
+        selected_bot
       }
     }
 }

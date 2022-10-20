@@ -254,8 +254,9 @@ public class Game extends Thread{
     }
 
     private void updateUserLastFinish(Player player, Date now) {
-        User user = WebSocketServer.userMapper.selectById(playerA.getId());
+        User user = WebSocketServer.userMapper.selectById(player.getId());
         user.setLastFinish(now);
+        user.setIsGaming(false);
         WebSocketServer.userMapper.updateById(user);
     }
 

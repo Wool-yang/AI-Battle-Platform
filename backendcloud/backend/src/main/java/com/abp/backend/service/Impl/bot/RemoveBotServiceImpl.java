@@ -30,12 +30,12 @@ public class RemoveBotServiceImpl implements RemoveBotService {
         Bot bot = botMapper.selectById(bot_id);
 
         if (bot == null) {
-            map.put("error_message", "Bot不存在或已经被删除");
+            map.put("error_message", "Bot does not exist or has been deleted");
             return map;
         }
 
         if(!bot.getUserId().equals(user.getId())) {
-            map.put("error_message", "没有权限删除此Bot");
+            map.put("error_message", "No permission to delete this bot");
             return map;
         }
 

@@ -105,6 +105,7 @@ public class WebSocketServer {
 
     private static void updateUserLastStart(User user, Date now) {
         user.setLastStart(now);
+        user.setIsGaming(true);
         WebSocketServer.userMapper.updateById(user);
     }
 
@@ -223,7 +224,7 @@ public class WebSocketServer {
 
     private Boolean check_lastGame() {
         Date lastStart = WebSocketServer.userMapper.selectById(user.getId()).getLastStart();
-        Date lastFinish = WebSocketServer.userMapper.selectById(user.getId()).getLastFinish();
+        Boolean isGaming = WebSocketServer.userMapper.selectById(user.getId()).getIsGaming();
 
         if (lastStart == null) {
             return true;
@@ -232,19 +233,17 @@ public class WebSocketServer {
         Date now = new Date();
 
         long startLong = lastStart.getTime();
-        long FinishLong = lastFinish.getTime();
         long nowLong = now.getTime();
 
         long deltaStart = Math.abs(nowLong - startLong);
-        long deltaFinish = nowLong - FinishLong;
 
         long startS = get_delta_seconds(deltaStart);
 
-        if (startS < 6) {
+        if (isGaming) {
             return false;
         }
 
-        if (deltaFinish < 0) {
+        if (startS < 6) {
             return false;
         }
 

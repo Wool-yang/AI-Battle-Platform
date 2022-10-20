@@ -25,6 +25,9 @@ export default ({
     updatePhoto(state, photo) {
       state.photo = photo;
     },
+    updateUsername(state, username) {
+      state.username = username;
+    },
     logout(state) {
       state.id = "";
       state.username = "";
